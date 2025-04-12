@@ -1,7 +1,6 @@
 import os
 import mariadb
 
-
 class FireUAIDB:
     def __init__(self, user, password, database):
         self._mydb = mariadb.connect(
@@ -205,10 +204,10 @@ class FireUAIDB:
         cursor = self._mydb.cursor()
         query_sql = "SELECT id, points, name FROM flags WHERE flag = %(flag)s;"
         cursor.execute(query_sql, {"flag": flag})
-        create_result = cursor.fetchone()
+        search_result = cursor.fetchone()
         cursor.close()
 
-        return create_result[0] if create_result else None
+        return search_result if search_result else None
 
     def reward_flag(self, user_id: str, flag: str) -> str | None:
         """
@@ -358,4 +357,4 @@ class FireUAIDB:
         cursor.close()
 
         return result
-
+    
