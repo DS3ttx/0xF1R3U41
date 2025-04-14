@@ -1,17 +1,20 @@
 from database import FireUAIDB
+from dotenv import load_dotenv
 from log import log_setup
 
-import sys
+import os
 import traceback
 
 import discord
 from discord.ext import commands
 
-# Read arguments
-user_db = sys.argv[1]
-pass_db = sys.argv[2]
-name_db = sys.argv[3]
-bot_id = sys.argv[4]
+load_dotenv()
+
+# Read keys
+user_db = os.getenv("DB_USERNAME")
+pass_db = os.getenv("DB_PASSWORD")
+name_db = os.getenv("DB_DATABASE")
+bot_id = os.getenv("DC_KEY")
 
 # Construct debugger
 debugger = log_setup()
