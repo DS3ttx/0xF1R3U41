@@ -277,7 +277,7 @@ class FireUAIDB:
         flags = cursor.fetchall()
         cursor.close()
         return flags
-    
+
     def ranking_by_points(self) -> list[dict]:
         """
         Retorna um Ranking com os 20 melhores colocados com base nos pontos
@@ -358,25 +358,25 @@ class FireUAIDB:
 
     def get_blooded_flag(self, challenge_name: str) -> dict | None:
         """
-        Obtém o nick da primeira pessoa que resolveu o desafio.
+        Obtém o id da primeira pessoa que resolveu o desafio.
 
         @type challenge_name: string
         @param challenge_name: Nome do desafio a ser procurado.
 
         @rtype: Dicionário
-        @return: O nome de quem resolveu e quando.
+        @return: O id de quem resolveu e quando.
         """
 
         cursor = self._mydb.cursor(dictionary=True)
 
         query_sql = """
             SELECT 
-                u.nickname,
+                u.id,
                 r.detetime AS solved_at
             FROM rewards r
             INNER JOIN flags f ON r.flag_id = f.id
             INNER JOIN users u ON r.user_id = u.id
-            WHERE f.name = %s
+            WHERE f.name = %s AND u.permission != 1
             ORDER BY r.detetime ASC
             LIMIT 1
         """

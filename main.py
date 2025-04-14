@@ -209,6 +209,25 @@ async def solves(ctx, challenge: str):
         return
 
 
+@client.command(aliases=["First", "fs"])
+async def first(ctx, challenge: str):
+    """Shows who is the first to win a challenge"""
+
+    try:
+        first_solve = database.get_blooded_flag(challenge)
+
+        if first_solve is None:
+            await ctx.reply(f"Ninguém resolveu o desafio {challenge} ainda!")
+            return
+
+        await ctx.reply(f"<@{first_solve['id']}> foi o primeiro a resolver o desafio __{challenge}__! Solucionado em: {first_solve['solved_at']}")
+
+    except Exception as error:
+        debugger.critical(traceback.format_exc())
+        await ctx.reply("Erro ao consultar as soluções!\nContate um administrador")
+        return
+
+
 @client.command(aliases=["Points", "p"])
 async def points(ctx):
     """Show how many points the user have"""
