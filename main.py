@@ -168,13 +168,13 @@ async def flag(ctx, attempt: str):
 
 
 @client.command(aliases=["ActiveFlags", "af"])
-async def get_flags(ctx):
+async def active_flags(ctx):
     """Get all active flags and expiration date"""
 
     try:
         flags = database.get_flags()
 
-        response_final = f"{'Desafio':<20} | {'Pontos':<5} | {'Evento':<25} | {'Validade'}\n"
+        response_final = f"```{'Desafio':<20} | {'Pontos':<5} | {'Evento':<25} | {'Validade'}\n"
         response_final += "-" * 70 + "\n"  # linha de separação
 
         for flag_info in flags:
