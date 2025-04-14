@@ -99,6 +99,14 @@ async def ranking_by_event(ctx, attempt: str):
         return
 
 
+@client.command(aliases=["RankingSemanal", "rs"])
+async def ranking_weekly(ctx):
+    """Show 20 top users inside a weekly chalenges on points system"""
+
+    await ranking_by_event(ctx, "Desafios_Semanais")
+    return
+
+
 @client.command(aliases=["Flag", "f"])
 async def flag(ctx, attempt: str):
     """Claims a Flag"""
