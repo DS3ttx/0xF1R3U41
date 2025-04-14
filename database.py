@@ -1,5 +1,5 @@
-import os
 import mariadb
+
 
 class FireUAIDB:
     def __init__(self, user, password, database):
@@ -142,10 +142,10 @@ class FireUAIDB:
         cursor = self._mydb.cursor()
         query_sql = "SELECT id FROM event WHERE name = %(name)s;"
         cursor.execute(query_sql, {"name": event_name})
-        create_result = cursor.fetchone()
+        result = cursor.fetchone()
         cursor.close()
 
-        return create_result[0] if create_result else None
+        return result[0] if result else None
 
     def create_flag(self, name: str, flag: str, points: int, event_name: str | None, creator_id: str) -> int | None:
         """

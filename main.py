@@ -120,7 +120,7 @@ async def flag(ctx, attempt: str):
 
     except Exception as error:
         debugger.critical(traceback.format_exc())
-        await ctx.reply("Ocorreu um erro ao gerar resgatar a flag!\nContate um moderador")
+        await ctx.reply("Ocorreu um erro ao resgatar a flag!\nContate um moderador")
         return
 
 
