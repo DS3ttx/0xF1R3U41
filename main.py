@@ -149,6 +149,11 @@ async def flag(ctx, attempt: str):
             return
 
         try_reward = database.reward_flag(user_id, attempt)
+
+        if try_reward is None:
+            await ctx.reply("Flag incorreta!")
+            return
+
         await ctx.reply(try_reward)
         return
 
