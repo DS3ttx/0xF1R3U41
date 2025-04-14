@@ -250,6 +250,34 @@ class FireUAIDB:
             cursor.close()
             return f"Você concluiu com sucesso o desafio: {search_flag[2]}"
 
+    def get_flags(self) -> list[dict]:
+        """
+        Retorna todas as flags ativas e a data de validade
+
+        @rtype: Lista de Dicionários
+        @return: Nome da Flag, Pontos e Validade
+        """
+
+        cursor = self._mydb.cursor(dictionary=True)
+        query_sql = """
+            SELECT 
+                f.name AS Desafio,
+                f.points AS Pontos,
+                e.name AS Evento,
+                f.expiration AS Validade
+            FROM flags f
+            INNER JOIN event e
+                ON f.event_id = e.id
+            WHERE f.expiration > NOW()
+            ORDER BY 
+                f.points ASC,
+                f.name ASC;
+        """
+        cursor.execute(query_sql)
+        flags = cursor.fetchall()
+        cursor.close()
+        return flags
+    
     def ranking_by_points(self) -> list[dict]:
         """
         Retorna um Ranking com os 20 melhores colocados com base nos pontos

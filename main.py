@@ -167,6 +167,34 @@ async def flag(ctx, attempt: str):
         return
 
 
+@client.command(aliases=["ActiveFlags", "af"])
+async def get_flags(ctx):
+    """Get all active flags and expiration date"""
+
+    try:
+        flags = database.get_flags()
+
+        response_final = f"{'Desafio':<20} | {'Pontos':<5} | {'Evento':<25} | {'Validade'}\n"
+        response_final += "-" * 70 + "\n"  # linha de separação
+
+        for flag_info in flags:
+            response_final += f"{flag_info['Desafio']:<20} | {flag_info['Pontos']:<5} | {flag_info['Evento']:<25} | {flag_info['Validade']}\n"
+
+        response_final += "```"
+
+        # Handles discord char limits
+        if len(response_final) > 2000:
+            response_final = response_final[:1994] + "...\n```"
+
+        await ctx.reply(response_final)
+        return
+
+    except Exception as error:
+        debugger.critical(traceback.format_exc())
+        await ctx.reply("Ocorreu um erro ao consultar as flags!\nContate um moderador")
+        return
+
+
 @client.command(aliases=["Solves", "s"])
 async def solves(ctx, challenge: str):
     """Show how many solutions the challange have actualy"""
