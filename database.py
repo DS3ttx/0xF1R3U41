@@ -262,6 +262,7 @@ class FireUAIDB:
         query_sql = """
             SELECT nickname, points
             FROM users
+            WHERE permission != 1
             ORDER BY points DESC
             LIMIT 20;
         """
@@ -291,7 +292,7 @@ class FireUAIDB:
             INNER JOIN flags f ON r.flag_id = f.id
             INNER JOIN users u ON r.user_id = u.id
             INNER JOIN event e ON f.event_id = e.id
-            WHERE e.name = %s
+            WHERE e.name = %s AND permission != 1
             GROUP BY u.id
             ORDER BY total_points DESC
             LIMIT 20;
