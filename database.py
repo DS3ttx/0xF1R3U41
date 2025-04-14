@@ -357,4 +357,3 @@ class FireUAIDB:
         cursor.close()
 
         return result
-    

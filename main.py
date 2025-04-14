@@ -13,7 +13,7 @@ pass_db = sys.argv[2]
 name_db = sys.argv[3]
 bot_id = sys.argv[4]
 
-#Construct debugger
+# Construct debugger
 debugger = log_setup()
 
 # Construct Database
@@ -42,7 +42,7 @@ async def register(ctx):
             return
 
         debugger.info(f"New user register: {user_id} {ctx.author.name}")
-        
+
         database.user_register(user_id, ctx.author.name)
         await ctx.reply("Seu perfil foi criado com sucesso!")
     except Exception as error:
@@ -105,6 +105,33 @@ async def ranking_weekly(ctx):
 
     await ranking_by_event(ctx, "Desafios_Semanais")
     return
+
+
+@client.command(aliases=["MakeFlag", "mf"])
+async def make_flag(ctx, name_flag: str, flag_str: str, points_flag: str, event_name: str | None = None):
+    """Make a flag if user is admin"""
+
+    user_id = str(ctx.author.id)
+
+    try:
+        if not database.user_is_admin(user_id):
+            await ctx.reply("Você não tem permissões de administrador!")
+            return
+
+        if not str(points_flag).isnumeric():
+            await ctx.reply("O valor de `points_flag` deve ser um número!")
+            return
+
+        if database.create_flag(name_flag, flag_str, int(points_flag), event_name, user_id) is None:
+            await ctx.reply("A `flag` ou `NameFlag` que você tentou criar já existia!")
+            return
+
+        await ctx.reply(f"A flag {name_flag} foi criada com sucesso!")
+
+    except Exception as error:
+        debugger.critical(traceback.format_exc())
+        await ctx.reply("Ocorreu um erro ao criar a flag!\nContate um moderador")
+        return
 
 
 @client.command(aliases=["Flag", "f"])
