@@ -159,8 +159,24 @@ async def flag(ctx, attempt: str):
         return
 
 
+@client.command(aliases=["Solves", "s"])
+async def solves(ctx, challenge: str):
+    """Show how many solutions the challange have actualy"""
+
+    try:
+        flag_solves = database.get_rewards_number_flag(challenge)
+        await ctx.reply(f"Atualmente o desafio {challenge} tem {flag_solves} soluções!")
+
+    except Exception as error:
+        debugger.critical(traceback.format_exc())
+        await ctx.reply("Erro ao consultar as soluções!\nContate um administrador")
+        return
+
+
 @client.command(aliases=["Points", "p"])
 async def points(ctx):
+    """Show how many points the user have"""
+
     user_id = str(ctx.author.id)
 
     try:
