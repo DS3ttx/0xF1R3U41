@@ -1,4 +1,4 @@
-from database import FireUAIDB
+from fireuai_db import FireuaiDB
 from dotenv import load_dotenv
 from log import log_setup
 
@@ -20,7 +20,7 @@ bot_id = os.getenv("DC_KEY")
 debugger = log_setup()
 
 # Construct Database
-database = FireUAIDB(user_db, pass_db, name_db)
+database = FireuaiDB(user_db, pass_db, name_db)
 
 # Define bot Permissions
 intents = discord.Intents.all()
