@@ -441,6 +441,34 @@ class FireuaiDB(Database):
 
         return result[0][0]
 
+    def create_hint(self, challenge_name: str, is_plus: bool, text: str):
+        """
+       Cria uma dica
+
+        @type challenge_name: string
+        @param challenge_name: Nome do desafio a ser procurado.
+        @type is_plus: bool
+        @param is_plus: Indica se a dica procurada é plus ou comum.
+        @type text: str
+        @param text: O texto a ser informado como dica
+        """
+
+        query_sql = """
+            INSERT INTO hints (flag_id, plus, text)
+            SELECT f.id, %(plus)s, %(text)s
+            FROM flags f
+            WHERE f.name = %(flag_name)s;
+        """
+
+        with self.get_connection() as connection:
+            cursor = connection.cursor()
+            try:
+                self._execute(query_sql, {"plus": is_plus, "flag_name": challenge_name, "text": text})
+            except Exception as e:
+                raise e
+            finally:
+                cursor.close()
+
     def subtract_user_coins(self, user_id: str, amount: int):
         """
         Troca coins por uma dica

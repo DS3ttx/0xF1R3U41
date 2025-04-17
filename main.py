@@ -281,6 +281,40 @@ async def has_hints(ctx, challenge: str):
         return
 
 
+@client.command(aliases=["HasHints", "hh"])
+async def create_hints(ctx, challenge: str, type_hint: str, text: str):
+    """Create a hint from a challenge if user is admin."""
+
+    if not (type_hint == "basic" or type_hint == "plus"):
+        await ctx.reply("O parâmetro type_hint deve ser 'basic' ou 'plus'.")
+        return
+
+    user_id = str(ctx.author.id)
+
+    try:
+        if not database.user_is_admin(user_id):
+            await ctx.reply("Você deve ter permissões administrativas para este comando!")
+            return
+
+        search = database.exists_hint_flag(challenge)
+
+        if search[0] and type_hint == 'basic':
+            await ctx.reply(f"Uma dica 'basic' já está disponível para {challenge}!")
+            return
+
+        if search[1] and type_hint == 'plus':
+            await ctx.reply(f"Uma dica 'plus' já está disponível para {challenge}!")
+            return
+
+        database.create_hint(challenge, type_hint == 'plus', text)
+        await ctx.reply(f"Você criou uma dica {type_hint} com sucesso para {challenge}!")
+
+    except Exception as error:
+        debugger.critical(traceback.format_exc())
+        await ctx.reply("Erro ao consultar as dicas!\nContate um administrador")
+        return
+
+
 @client.command(aliases=["Hint", "h"])
 async def hint(ctx, challenge: str, type_hint: str):
     """Reward a Hint plus or basic (type) for a challenge using coins"""
