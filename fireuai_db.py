@@ -386,3 +386,83 @@ class FireuaiDB(Database):
         result = self._execute(query_sql, (challenge_name,), _dict=True)
 
         return result[0]
+
+    def exists_hint_flag(self, challenge_name: str) -> tuple[bool, bool]:
+        """
+        Verifica se existe dicas para um desafio
+
+        @type challenge_name: string
+        @param challenge_name: Nome do desafio.
+
+        @rtype: Tupla
+        @return: Uma tupla (bool, bool) informando se existe uma dica normal e uma dica plus.
+        """
+
+        query_sql = """
+            SELECT t.plus, 1
+            FROM flags f
+            INNER JOIN hints t ON f.id = t.flag_id
+            WHERE f.name = %s;
+        """
+
+        result = self._execute(query_sql, (challenge_name,))
+
+        if len(result) == 1:
+            if result[0][0] == 1:
+                return False, True
+            return True, False
+
+        elif len(result) == 2:
+            return True, True
+
+        return False, False
+
+    def get_hint_flag(self, challenge_name: str, is_plus: bool) -> str:
+        """
+       Obtém uma dica
+
+        @type challenge_name: string
+        @param challenge_name: Nome do desafio a ser procurado.
+        @type is_plus: bool
+        @param is_plus: Indica se a dica procurada é plus ou comum.
+
+        @rtype: string
+        @return: A dica procurada
+        """
+
+        query_sql = """
+            SELECT t.text
+            FROM flags f
+            INNER JOIN hints t ON f.id = t.flag_id
+            WHERE f.name = %s AND t.plus = %s;
+        """
+
+        result = self._execute(query_sql, (challenge_name, is_plus))
+
+        return result[0][0]
+
+    def subtract_user_coins(self, user_id: str, amount: int):
+        """
+        Troca coins por uma dica
+
+        @type user_id: string
+        @param user_id: Id do usuário que irá perder coins.
+        @type amount: int
+        @param amount: Quantidade de moedas a serem retiradas.
+
+        @rtype: None
+        """
+
+        query_sql = "UPDATE users SET coins = coins - %s WHERE id = %s;"
+
+        with self.get_connection() as connection:
+            cursor = connection.cursor()
+            try:
+                cursor.execute(query_sql, (amount, user_id))
+            except Exception as err:
+                connection.rollback()
+                cursor.close()
+                raise err
+            else:
+                connection.commit()
+                cursor.close()

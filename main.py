@@ -244,4 +244,81 @@ async def points(ctx):
         return
 
 
+@client.command(aliases=["Coins", "c"])
+async def coins(ctx):
+    """Show how many coins the user have"""
+
+    user_id = str(ctx.author.id)
+
+    try:
+        user_coins = database.get_user_coins(user_id)
+        await ctx.reply(f"Você atualmente tem {user_coins} moedas!")
+
+    except Exception as error:
+        debugger.critical(traceback.format_exc())
+        await ctx.reply("Erro ao consultar os pontos!\nContate um administrador")
+        return
+
+
+@client.command(aliases=["HasHints", "hh"])
+async def has_hints(ctx, challenge: str):
+    """Show if a challenge has hints available"""
+
+    user_id = str(ctx.author.id)
+
+    try:
+        search = database.exists_hint_flag(challenge)
+
+        if search[0]:
+            await ctx.reply(f"Uma dica normal está disponível para {challenge} por 1000 moedas!")
+
+        if search[1]:
+            await ctx.reply(f"Uma dica plus está disponível para {challenge} por 2000 moedas!")
+
+    except Exception as error:
+        debugger.critical(traceback.format_exc())
+        await ctx.reply("Erro ao consultar as dicas!\nContate um administrador")
+        return
+
+
+@client.command(aliases=["Hint", "h"])
+async def hint(ctx, challenge: str, type_hint: str):
+    """Reward a Hint plus or basic (type) for a challenge using coins"""
+
+    if not (type_hint == "plus" or type_hint == "basic"):
+        await ctx.reply(f"Não consegui entender o tipo da dica desejada! Atualmente temos os tipos 'basic' e 'plus'")
+        return
+
+    user_id = str(ctx.author.id)
+
+    try:
+        is_plus = type_hint == 'plus'
+
+        user_coins = database.get_user_coins(user_id)
+        require = 2000 if is_plus else 1000
+
+        if user_coins < require:
+            await ctx.reply(f"Você não tem moedas suficientes para esta operação! Saldo: {user_coins}")
+            return
+
+        exist_hint = database.exists_hint_flag(challenge)
+
+        if is_plus and not exist_hint[1]:
+            await ctx.reply(f"Atualmente o desafio {challenge} não tem dicas 'plus'.")
+            return
+
+        if not is_plus and not exist_hint[0]:
+            await ctx.reply(f"Atualmente o desafio {challenge} não tem dicas 'basic'.")
+            return
+
+        database.subtract_user_coins(user_id, require)
+        hint_txt = database.get_hint_flag(challenge, is_plus)
+        await ctx.reply(hint_txt)
+
+    except Exception as error:
+        debugger.critical(traceback.format_exc())
+        await ctx.reply("Erro ao consultar os pontos!\nContate um administrador")
+        return
+
+
 client.run(bot_id)
