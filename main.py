@@ -281,7 +281,7 @@ async def has_hints(ctx, challenge: str):
         return
 
 
-@client.command(aliases=["HasHints", "hh"])
+@client.command(aliases=["CreateHints", "ch"])
 async def create_hints(ctx, challenge: str, type_hint: str, text: str):
     """Create a hint from a challenge if user is admin."""
 
