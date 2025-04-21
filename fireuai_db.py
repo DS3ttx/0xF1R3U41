@@ -17,7 +17,7 @@ class FireuaiDB(Database):
         query_sql = "SELECT 1 FROM users WHERE id = %(user_id)s LIMIT 1"
         result = self._execute(query_sql, {"user_id": user_id})
 
-        return result is not None
+        return bool(result)
 
     def user_is_admin(self, user_id) -> bool:
         """
