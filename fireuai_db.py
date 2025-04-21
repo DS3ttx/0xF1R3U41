@@ -292,6 +292,42 @@ class FireuaiDB(Database):
         flags = self._execute(query_sql, _dict=True)
         return flags
 
+    def get_remaining_flags(self, user_id) -> list[dict]:
+        """
+        Retorna todas as flags ativas que o usuário ainda não completou e a data de validade
+
+        @rtype: Lista de Dicionários
+        @return: Nome da Flag, Pontos e Validade
+        """
+
+        query_sql = """
+            SELECT DISTINCT
+                f.name AS Desafio,
+                f.points AS Pontos,
+                e.name AS Evento,
+                f.expiration AS Validade
+            FROM flags f
+            INNER JOIN rewards r
+                ON r.flag_id = f.id
+            INNER JOIN event e
+                ON f.event_id = e.id
+            WHERE f.id NOT IN (
+                SELECT
+                    id
+                FROM flags f2
+                INNER JOIN rewards r2
+                    ON f2.id = r2.flag_id
+                WHERE r2.user_id = %s
+            )
+                AND f.expiration > NOW()
+            ORDER BY 
+                f.points ASC,
+                f.name ASC;
+        """
+
+        flags = self._execute(query_sql, (user_id,), _dict=True)
+        return flags
+
     def ranking_by_points(self) -> list[dict]:
         """
         Retorna um Ranking com os 20 melhores colocados com base nos pontos

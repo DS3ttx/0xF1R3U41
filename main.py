@@ -195,6 +195,40 @@ async def active_flags(ctx):
         return
 
 
+@client.command(aliases=["RemainingFlags", "rf"])
+async def remaining_flags(ctx):
+    """Get all active flags remaining for the user and the expiration date"""
+
+    user_id = str(ctx.author.id)
+
+    try:
+        flags = database.get_remaining_flags(user_id)
+
+        if len(flags) == 0:
+            await ctx.reply("Parabéns! Não há nenhuma flag ativa que você deixou de capturar!")
+            return
+
+        response_final = f"```{'Desafio':<20} | {'Pontos':<5} | {'Evento':<25} | {'Validade'}\n"
+        response_final += "-" * 70 + "\n"  # linha de separação
+
+        for flag_info in flags:
+            response_final += f"{flag_info['Desafio']:<20} | {flag_info['Pontos']:<5} | {flag_info['Evento']:<25} | {flag_info['Validade']}\n"
+
+        response_final += "```"
+
+        # Handles discord char limits
+        if len(response_final) > 2000:
+            response_final = response_final[:1994] + "...\n```"
+
+        await ctx.reply(response_final)
+        return
+
+    except Exception as error:
+        debugger.critical(traceback.format_exc())
+        await ctx.reply("Ocorreu um erro ao consultar as flags!\nContate um moderador")
+        return
+
+
 @client.command(aliases=["Solves", "s"])
 async def solves(ctx, challenge: str):
     """Show how many solutions the challange have actualy"""
@@ -220,7 +254,8 @@ async def first(ctx, challenge: str):
             await ctx.reply(f"Ninguém resolveu o desafio {challenge} ainda!")
             return
 
-        await ctx.reply(f"<@{first_solve['id']}> foi o primeiro a resolver o desafio __{challenge}__! Solucionado em: {first_solve['solved_at']}")
+        await ctx.reply(
+            f"<@{first_solve['id']}> foi o primeiro a resolver o desafio __{challenge}__! Solucionado em: {first_solve['solved_at']}")
 
     except Exception as error:
         debugger.critical(traceback.format_exc())
