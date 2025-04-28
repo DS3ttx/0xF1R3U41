@@ -1,5 +1,5 @@
 from database import Database
-from datetime import datetime
+from datetime import datetime, timedelta
 
 
 class FireuaiDB(Database):
@@ -233,7 +233,20 @@ class FireuaiDB(Database):
         search_flag = self.search_flag(flag)
         if search_flag:
 
-            if search_flag[3] < datetime.now():
+            now = datetime.now()
+            deadline = search_flag[3] + timedelta(days=7)
+
+            # Verifica atraso
+            if search_flag[3] < now < deadline:
+                with self.get_connection() as connection:
+                    cursor = connection.cursor()
+                    query_sql = "UPDATE flags SET points = points / 2 WHERE id = %s"
+                    cursor.execute(query_sql, (search_flag[0],))
+                    cursor.close()
+                    connection.commit()
+
+            # Verifica validade
+            elif now > deadline:
                 return f"O desafio {search_flag[2]} expirou! Utilize '!af' para ver os desafios ativos."
 
             with self.get_connection() as connection:
