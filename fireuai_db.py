@@ -1,4 +1,5 @@
 from database import Database
+from datetime import datetime
 
 
 class FireuaiDB(Database):
@@ -202,16 +203,16 @@ class FireuaiDB(Database):
 
     def search_flag(self, flag: str) -> tuple | None:
         """
-        Procura o Id, pontos e nome de um desafio com base na string da flag.
+        Procura o Id, pontos, nome e validade de um desafio com base na string da flag.
 
         @type flag: string
         @param flag: String da flag a ser procurada.
 
         @rtype: Tupla ou None
-        @return: Uma tripla com Id, pontos e nome do desafio da flag ou None caso não exista
+        @return: Uma quadrupla com Id, pontos, nome e validade do desafio da flag ou None caso não exista
         """
 
-        query_sql = "SELECT id, points, name FROM flags WHERE flag = %(flag)s;"
+        query_sql = "SELECT id, points, name, expiration FROM flags WHERE flag = %(flag)s;"
         search_result = self._execute(query_sql, {"flag": flag})
 
         return search_result[0] if search_result else None
@@ -231,6 +232,9 @@ class FireuaiDB(Database):
 
         search_flag = self.search_flag(flag)
         if search_flag:
+
+            if search_flag[3] < datetime.now():
+                return f"O desafio {search_flag[2]} expirou! Utilize '!af' para ver os desafios ativos."
 
             with self.get_connection() as connection:
                 cursor = connection.cursor()
