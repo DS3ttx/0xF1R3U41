@@ -234,16 +234,12 @@ class FireuaiDB(Database):
         if search_flag:
 
             now = datetime.now()
+            points = search_flag[2]
             deadline = search_flag[3] + timedelta(days=7)
 
             # Verifica atraso
             if search_flag[3] < now < deadline:
-                with self.get_connection() as connection:
-                    cursor = connection.cursor()
-                    query_sql = "UPDATE flags SET points = points / 2 WHERE id = %s"
-                    cursor.execute(query_sql, (search_flag[0],))
-                    cursor.close()
-                    connection.commit()
+                points /= 2
 
             # Verifica validade
             elif now > deadline:
@@ -271,7 +267,7 @@ class FireuaiDB(Database):
                         SET points = points + %(points)s, coins = coins + %(points)s
                         WHERE id = %(user_id)s;
                     """
-                    cursor.execute(query_sql, {"points": search_flag[1], "user_id": user_id})
+                    cursor.execute(query_sql, {"points": points, "user_id": user_id})
 
                 except Exception as err:
                     connection.rollback()
