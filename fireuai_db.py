@@ -438,7 +438,7 @@ class FireuaiDB(Database):
 
         result = self._execute(query_sql, (challenge_name,), _dict=True)
 
-        return result[0]
+        return result[0] if len(result) > 0 else None
 
     def exists_hint_flag(self, challenge_name: str) -> tuple[bool, bool]:
         """
