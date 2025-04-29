@@ -290,7 +290,7 @@ class FireuaiDB(Database):
         query_sql = """
             SELECT 
                 f.name AS Desafio,
-                (f.points / 2) AS Pontos,
+                ROUND(f.points / 2) AS Pontos,
                 e.name AS Evento,
                 f.expiration AS Validade
             FROM flags f
