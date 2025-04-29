@@ -116,6 +116,7 @@ async def make_flag(ctx, name_flag: str, flag_str: str, points_flag: str, event_
     """Make a flag if user is admin"""
 
     user_id = str(ctx.author.id)
+    debugger.info(f"Make flag attempt - {user_id} - {name_flag} - {flag_str} - {points_flag} - {event_name}")
 
     try:
         if not database.user_is_admin(user_id):
@@ -143,6 +144,7 @@ async def flag(ctx, attempt: str):
     """Claims a Flag"""
 
     user_id = str(ctx.author.id)
+    debugger.info(f"Flag reward attempt - {user_id} - {attempt}")
 
     try:
         if not database.user_exists(user_id):
@@ -366,6 +368,7 @@ async def hint(ctx, challenge: str, type_hint: str):
         return
 
     user_id = str(ctx.author.id)
+    debugger.info(f"Hint reward attempt - {user_id} - {challenge} - {type_hint}")
 
     try:
         is_plus = type_hint == 'plus'
