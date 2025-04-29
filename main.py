@@ -4,6 +4,7 @@ from log import log_setup
 
 import os
 import traceback
+from datetime import datetime
 
 import discord
 from discord.ext import commands
@@ -200,6 +201,7 @@ async def remaining_flags(ctx):
     """Get all active flags remaining for the user and the expiration date"""
 
     user_id = str(ctx.author.id)
+    now = datetime.now()
 
     try:
         flags = database.get_remaining_flags(user_id)
@@ -212,7 +214,12 @@ async def remaining_flags(ctx):
         response_final += "-" * 70 + "\n"  # linha de separação
 
         for flag_info in flags:
-            response_final += f"{flag_info['Desafio']:<20} | {flag_info['Pontos']:<5} | {flag_info['Evento']:<25} | {flag_info['Validade']}\n"
+            if now > flag_info['Validade']:
+                response_final += f"{flag_info['Desafio']:<20} | {(flag_info['Pontos']/2):<5} | " \
+                                  f"{flag_info['Evento']:<25} | {flag_info['Validade']}\n"
+            else:
+                response_final += f"{flag_info['Desafio']:<20} | {flag_info['Pontos']:<5} | " \
+                                  f"{flag_info['Evento']:<25} | {flag_info['Validade']}\n"
 
         response_final += "```"
 

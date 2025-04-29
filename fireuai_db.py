@@ -290,16 +290,27 @@ class FireuaiDB(Database):
         query_sql = """
             SELECT 
                 f.name AS Desafio,
+                (f.points / 2) AS Pontos,
+                e.name AS Evento,
+                f.expiration AS Validade
+            FROM flags f
+            INNER JOIN event e
+                ON f.event_id = e.id
+            WHERE f.expiration > NOW() - INTERVAL 7 DAY -- resgate em atraso
+              AND f.expiration <= NOW() -- retirar intersecção
+            UNION ALL
+            SELECT 
+                f.name AS Desafio,
                 f.points AS Pontos,
                 e.name AS Evento,
                 f.expiration AS Validade
             FROM flags f
             INNER JOIN event e
                 ON f.event_id = e.id
-            WHERE f.expiration > NOW()
-            ORDER BY 
-                f.points ASC,
-                f.name ASC;
+            WHERE f.expiration > NOW()  -- ainda válidos
+            ORDER BY
+                Pontos ASC,
+                Desafio ASC;
         """
 
         flags = self._execute(query_sql, _dict=True)
@@ -332,7 +343,7 @@ class FireuaiDB(Database):
                     ON f2.id = r2.flag_id
                 WHERE r2.user_id = %s
             )
-                AND f.expiration > NOW()
+                AND (f.expiration > NOW() OR f.expiration > NOW() - INTERVAL 7 DAY)
             ORDER BY 
                 f.points ASC,
                 f.name ASC;
