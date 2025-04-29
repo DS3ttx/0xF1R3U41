@@ -234,7 +234,7 @@ class FireuaiDB(Database):
         if search_flag:
 
             now = datetime.now()
-            points = search_flag[2]
+            points = search_flag[1]
             deadline = search_flag[3] + timedelta(days=7)
 
             # Verifica atraso
