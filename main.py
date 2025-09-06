@@ -16,12 +16,13 @@ user_db = os.getenv("DB_USERNAME")
 pass_db = os.getenv("DB_PASSWORD")
 name_db = os.getenv("DB_DATABASE")
 bot_id = os.getenv("DC_KEY")
+url = os.getenv("URL_WEBHOOK")
 
 # Construct debugger
 debugger = log_setup()
 
 # Construct Database
-database = FireuaiDB(user_db, pass_db, name_db)
+database = FireuaiDB(user_db, pass_db, name_db, url)
 
 # Define bot Permissions
 intents = discord.Intents.all()

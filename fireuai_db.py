@@ -1,9 +1,12 @@
+from json import dumps
+from requests import post
 from database import Database
 from datetime import datetime, timedelta
 
 
 class FireuaiDB(Database):
-    def __init__(self, user, password, database):
+    def __init__(self, user, password, database, url):
+        self.url = url
         super().__init__("localhost", user, password, database)
 
     def user_exists(self, user_id: str) -> bool:
@@ -277,6 +280,27 @@ class FireuaiDB(Database):
                 else:
                     connection.commit()
                     cursor.close()
+                    
+                    if search_flag[2] == "FireUAI_CTF":
+                        try:
+                            payload = {
+                                "content": f"<@{user_id}> <@user>",
+                                "embeds": [
+                                    {
+                                        "title": "🔥 Desafio Concluído!",
+                                        "description": f"Parabéns <@{user_id}>! Você desvendou o **CTF oculto do FireUAI** e provou que sua mente é tão afiada quanto o fogo é intenso. 🔥🧠\n\nVocê agora faz parte da nossa elite hacker!",
+                                        "color": 16734296,
+                                        "footer": {
+                                            "text": "FireUAI CTF • O segredo está nos detalhes"
+                                        },
+                                        "timestamp": datetime.now().isoformat()
+                                    }
+                                ]
+                            }
+                            post(self.url, data=dumps(payload))
+                        except Exception:
+                            pass
+                    
                     return f"Você concluiu com sucesso o desafio: {search_flag[2]}"
 
     def get_flags(self) -> list[dict]:
