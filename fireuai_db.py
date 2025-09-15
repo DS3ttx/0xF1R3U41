@@ -1,7 +1,7 @@
 from json import dumps
 from requests import post
 from database import Database
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 
 class FireuaiDB(Database):
@@ -280,7 +280,7 @@ class FireuaiDB(Database):
                 else:
                     connection.commit()
                     cursor.close()
-                    
+
                     if search_flag[2] == "FireUAI_CTF":
                         try:
                             payload = {
@@ -293,14 +293,14 @@ class FireuaiDB(Database):
                                         "footer": {
                                             "text": "FireUAI CTF • O segredo está nos detalhes"
                                         },
-                                        "timestamp": datetime.now().isoformat()
+                                        "timestamp": datetime.now(timezone.utc).isoformat()
                                     }
                                 ]
                             }
-                            post(self.url, data=dumps(payload))
+                            post(self.url, headers={"Content-Type": "application/json"}, data=dumps(payload))
                         except Exception:
                             pass
-                    
+
                     return f"Você concluiu com sucesso o desafio: {search_flag[2]}"
 
     def get_flags(self) -> list[dict]:
