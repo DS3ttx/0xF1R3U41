@@ -388,7 +388,7 @@ class FireuaiDB(Database):
         query_sql = """
             SELECT nickname, points
             FROM users
-            WHERE permission != 1
+            WHERE permission != 1 AND points > 0
             ORDER BY points DESC
             LIMIT 20;
         """
